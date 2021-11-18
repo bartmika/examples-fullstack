@@ -1,6 +1,8 @@
 import { React, Component } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { getGlobalState, setGlobalState } from "../Helpers/StateHelper";
+import { getOrCreateGlobalState, setGlobalState } from "../Helpers/StateHelper";
+import { getNotes } from "../API/Note";
+
 
 function NoteListItem(props) {
     const { note, onListItemClick } = props;
@@ -22,35 +24,20 @@ class NoteListPage extends Component {
     constructor(props) {
         super(props);
 
-        const globalState = getGlobalState();
-        const { alertType, alertMsg} = globalState;
+        const globalState = getOrCreateGlobalState();
 
         this.state ={
-            alertType: alertType,
-            alertMsg: alertMsg,
-            notes: [
-                {
-                    id: 1,
-                    title: "hello world",
-                    category: "random",
-                    text: "Hello and welcome to my app!"
-                },
-                {
-                    id: 2,
-                    title: "note to self",
-                    category: "reminder",
-                    text: "Do not forget to lock the door before you leave"
-                },
-                {
-                    id: 3,
-                    title: "another note to self",
-                    category: "reminder",
-                    text: "Pay the phone bill."
-                }
-            ],
+            alertType: globalState["alertType"],
+            alertMsg: globalState["alertMsg"],
+            notes: [],
             forceURL: "",
+            isLoading: true,
+            hasError: false,
         };
         this.onListItemClick = this.onListItemClick.bind(this);
+        this.onSuccess = this.onSuccess.bind(this);
+        this.onError = this.onError.bind(this);
+        this.onDone = this.onDone.bind(this);
     }
 
     componentDidMount() {
@@ -59,6 +46,8 @@ class NoteListPage extends Component {
             alertMsg: "",
         };
         setGlobalState(globalState);
+
+        getNotes(this.onSuccess, this.onError, this.onDone);
     }
 
     onListItemClick(e, id) {
@@ -68,8 +57,23 @@ class NoteListPage extends Component {
         });
     }
 
+    onSuccess(res) {
+        const { results } = res.data;
+        this.setState({
+            notes: results,
+            isLoading: false,
+            hasError: false,
+        });
+    }
+
+    onError(err) {
+
+    }
+
+    onDone() {}
+
     render() {
-        const { notes, forceURL, alertType, alertMsg } = this.state;
+        const { notes, forceURL, alertType, alertMsg, isLoading } = this.state;
 
         if (forceURL != "") {
             return <Navigate to={forceURL} />;
@@ -107,12 +111,24 @@ class NoteListPage extends Component {
                 <div>
                     <h1 className="w3-margin-left"><strong><i className="fa fa-list"></i> View List</strong></h1>
                     <div className="w3-container">
-
-
+                        {isLoading
+                            ? <div class="w3-panel w3-blue">
+                                  <h3><i className="fa fa-spinner w3-spin"></i> Loading</h3>
+                                  <p>Retrieving data from server, please wait.</p>
+                            </div>
+                            : <div>
+                                {notes.length > 0
+                                    ? <ul className="w3-ul w3-white w3-card">
+                                        {noteElements}
+                                    </ul>
+                                    : <div className="w3-white w3-container">
+                                        <h4>Welcome <i className="fa fa-hand-peace-o"></i></h4>
+                                        <p>To get started, click the add button and begin creating your notes.</p>
+                                    </div>
+                                }
+                            </div>
+                        }
                     </div>
-                    <ul className="w3-ul w3-white w3-card">
-                        {noteElements}
-                    </ul>
                 </div>
 
             </>

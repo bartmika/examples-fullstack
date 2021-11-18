@@ -1,33 +1,44 @@
 import { React, Component } from "react";
 import { Link, Navigate } from "react-router-dom";
+import { getGlobalState, setGlobalState } from "../Helpers/StateHelper";
+import { putNote } from "../API/Note";
 
 
 class NoteUpdatePage extends Component {
     constructor(props) {
         super(props);
 
-        // Special thanks to link via https://stackoverflow.com/a/3730376
-        var stuff = window.location.pathname.split('/');
-        console.log(stuff);
-        var id = stuff[1];
+        const globalState = getGlobalState();
+        const { id, title, category, text } = globalState;
 
         this.state ={
             noteId: id,
             forceURL: "",
-            title: "Hello world!",
-            category: "random",
-            text: "Hello this is a test comment. Hello this is a test comment. Hello this is a test comment. Hello this is a test comment. Hello this is a test comment.",
+            title: title,
+            category: category,
+            text: text,
+            isLoading: false,
         }
 
         this.onTextChange = this.onTextChange.bind(this);
         this.onSaveClick = this.onSaveClick.bind(this);
+        this.onSuccess = this.onSuccess.bind(this);
+        this.onError = this.onError.bind(this);
+        this.onDone = this.onDone.bind(this);
     }
 
     onSaveClick(e) {
-        const id = 1; // Pretend this is our value.
-        console.log("Saved!");
         this.setState({
-            forceURL: "/" + id,
+            isLoading: true,
+        }, ()=>{
+            const { noteId, title, category, text } = this.state;
+            const postData = {
+               id: noteId,
+               title: title,
+               category: category,
+               text: text,
+            };
+            putNote(postData, this.onSuccess, this.onError, this.onDone);
         });
     }
 
@@ -39,8 +50,32 @@ class NoteUpdatePage extends Component {
         });
     }
 
+    onSuccess(res) {
+        // Set the global state to have a success message.
+        const globalState = {
+            "alertType": "success",
+            "alertMsg": "The note has been updated!"
+        };
+        setGlobalState(globalState);
+
+        // Redirect the user back to the retrieve page.
+        const forceURL = "/" + res.data.id;
+        this.setState({
+            isLoading: false,
+            forceURL: forceURL,
+        });
+    }
+
+    onError(err) {
+        this.setState({
+            isLoading: false,
+        });
+    }
+
+    onDone() {}
+
     render() {
-        const { forceURL, noteId, title, category, text } = this.state;
+        const { forceURL, noteId, title, category, text, isLoading } = this.state;
         if (forceURL !== "") {
             return <Navigate to={forceURL} />;
         }
@@ -56,6 +91,12 @@ class NoteUpdatePage extends Component {
 
                     </div>
                 </div>
+
+                {isLoading && <div class="w3-panel w3-blue">
+                      <h3><i className="fa fa-spinner w3-spin"></i> Loading</h3>
+                      <p>Retrieving data from server, please wait.</p>
+                </div>}
+
                 <h1 className="w3-margin-left"><strong><i className="fa fa-pencil"></i> Update</strong></h1>
                 <p className="w3-margin-left">Please fill out all the required fields that have the astricks (*) character</p>
                 <form className="w3-container">
@@ -73,7 +114,7 @@ class NoteUpdatePage extends Component {
                 </form>
 
                 <div className="w3-bottom w3-padding">
-                    <button onClick={this.onSaveClick} className="w3-btn w3-green w3-block w3-round-large">Save</button>
+                    <button onClick={this.onSaveClick} className="w3-btn w3-green w3-block w3-round-large" disabled={isLoading===true}>Save</button>
                     <Link to={`/${noteId}`} className="w3-margin-top w3-btn w3-red w3-block w3-round-large">Cancel</Link>
                 </div>
             </>

@@ -1,27 +1,59 @@
 import { React, Component } from "react";
 import { Link, Navigate } from "react-router-dom";
-
+import { postNote } from "../API/Note";
 
 class NoteAddPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
             forceURL: "",
+            title: "",
+            category: "",
+            text: "",
         }
 
+        this.onTextChange = this.onTextChange.bind(this);
         this.onSaveClick = this.onSaveClick.bind(this);
+        this.onSuccess = this.onSuccess.bind(this);
+        this.onError = this.onError.bind(this);
+        this.onDone = this.onDone.bind(this);
     }
 
     onSaveClick(e) {
-        const id = 1; // Pretend this is our value.
-        console.log("Saved!");
+        const { title, category, text } = this.state;
+        const data = {
+            title: title,
+            category: category,
+            text: text,
+        };
+        postNote(data, this.onSuccess, this.onError, this.onDone);
+    }
+
+    onSuccess(response) {
+        const { id } = response.data;
         this.setState({
             forceURL: "/" + id,
         });
     }
 
+    onError(err){
+
+    }
+
+    onDone() {
+
+    }
+
+    onTextChange(e) {
+        const name = e.target.name;
+        const value = e.target.value;
+        this.setState({
+            [name]: value,
+        });
+    }
+
     render() {
-        const { forceURL } = this.state;
+        const { forceURL, title, category, text } = this.state;
         if (forceURL !== "") {
             return <Navigate to={forceURL} />;
         }
@@ -49,13 +81,13 @@ class NoteAddPage extends Component {
 
                     <p>
                     <label>Title (*)</label>
-                    <input className="w3-input" type="text" placeholder="Enter title" /></p>
+                    <input className="w3-input" name="title" type="text" placeholder="Enter title" value={title} onChange={this.onTextChange} /></p>
                     <p>
                     <label>Category (*)</label>
-                    <input className="w3-input" type="text" placeholder="Enter category" /></p>
+                    <input className="w3-input" name="category" type="text" placeholder="Enter category" value={category} onChange={this.onTextChange} /></p>
                     <p>
                     <label>Text (*)</label>
-                    <textarea className="w3-input" rows={8} placeholder="Enter text message of the note"></textarea>
+                    <textarea className="w3-input" name="text" rows={8} placeholder="Enter text message of the note" value={text} onChange={this.onTextChange} ></textarea>
                     </p>
 
                 </form>
