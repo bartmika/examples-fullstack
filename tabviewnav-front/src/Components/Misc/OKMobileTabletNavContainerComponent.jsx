@@ -23,24 +23,24 @@ export default function MobileTabletNavContainer(props) {
             </div>}
 
             <div className="w3-bottom w3-black w3-bar">
-                <div className="w3-bar-item w3-center" style={{width:"25%"}}>
-                    <Link to="/dashboard">
-                        <i className={`fa fa-tachometer ${basePath === "dashboard" ? "w3-text-blue" : ""}`}></i><br /><span className="w3-tiny">Dashboard</span>
+                <div className={`w3-bar-item w3-center ${basePath === "dashboard" ? "w3-text-blue" : ""}`} style={{width:"25%"}}>
+                    <Link to="/dashboard" style={{ textDecoration: "none"}}>
+                        <i className={`fa fa-tachometer w3-large`}></i><br /><span className="w3-small">Dashboard</span>
                     </Link>
                 </div>
-                <div className="w3-bar-item w3-center" style={{width:"25%"}}>
-                    <Link to="/books">
-                        <i className={`fa fa-book ${basePath === "books" ? "w3-text-blue" : ""}`}></i><br /><span className="w3-tiny">Books</span>
+                <div className={`w3-bar-item w3-center ${basePath === "books" ? "w3-text-blue" : ""}`} style={{width:"25%"}}>
+                    <Link to="/books" style={{ textDecoration: "none"}}>
+                        <i className={`fa fa-book w3-large`}></i><br /><span className="w3-small">Books</span>
                     </Link>
                 </div>
-                <div className="w3-bar-item w3-center" style={{width:"25%"}}>
-                    <Link to="/music">
-                        <i className={`fa fa-music ${basePath === "music" ? "w3-text-blue" : ""}`}></i><br /><span className="w3-tiny">Music</span>
+                <div className={`w3-bar-item w3-center ${basePath === "music" ? "w3-text-blue" : ""}`} style={{width:"25%"}}>
+                    <Link to="/music" style={{ textDecoration: "none"}}>
+                        <i className={`fa fa-music w3-large`}></i><br /><span className="w3-small">Music</span>
                     </Link>
                 </div>
-                <div className="w3-bar-item w3-center" style={{width:"25%"}}>
-                    <div onClick={() => setIsMoreClicked(!isMoreClicked)}>
-                        <i className="fa fa-ellipsis-h"></i><br /><span className="w3-tiny">More</span>
+                <div className={`w3-bar-item w3-center ${isMoreClicked === true ? "w3-text-blue" : ""}`} style={{width:"25%"}}>
+                    <div onClick={() => setIsMoreClicked(!isMoreClicked)} style={{ textDecoration: "none"}}>
+                        <i className="fa fa-ellipsis-h w3-large"></i><br /><span className="w3-small">More</span>
                     </div>
                 </div>
             </div>

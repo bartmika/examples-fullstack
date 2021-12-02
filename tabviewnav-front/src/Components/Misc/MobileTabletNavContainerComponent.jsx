@@ -20,17 +20,17 @@ export default function MobileTabletNavContainer(props) {
 
             <div className="w3-bottom w3-black w3-bar w3-xlarge">
                 <div className="w3-bar-item w3-center" style={{width:"25%"}}>
-                    <Link to="/dashboard">
+                    <Link to={isMoreClicked ? "#" : "/dashboard"}>
                         <i className={`fa fa-tachometer ${basePath === "dashboard" && !isMoreClicked ? "w3-text-blue" : ""}`}></i>
                     </Link>
                 </div>
                 <div className="w3-bar-item w3-center" style={{width:"25%"}}>
-                    <Link to="/books">
+                    <Link to={isMoreClicked ? "#" : "/books"}>
                         <i className={`fa fa-book ${basePath === "books" && !isMoreClicked ? "w3-text-blue" : ""}`}></i>
                     </Link>
                 </div>
                 <div className="w3-bar-item w3-center" style={{width:"25%"}}>
-                    <Link to="/music">
+                    <Link to={isMoreClicked ? "#" : "/music"}>
                         <i className={`fa fa-music ${basePath === "music" && !isMoreClicked ? "w3-text-blue" : ""}`}></i>
                     </Link>
                 </div>
